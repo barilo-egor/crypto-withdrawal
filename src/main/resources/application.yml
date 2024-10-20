@@ -1,0 +1,19 @@
+spring:
+  config:
+    import: "optional:config/cryptowithdrawal/config.yml"
+  application:
+    name: crypto-withdrawal
+  mvc:
+    servlet:
+      path: /crypto_withdrawal
+
+
+logging:
+  level:
+    root: INFO
+    tgb.cryptoexchange: DEBUG
+  file:
+    name: logs/cryptowithdrawal.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
