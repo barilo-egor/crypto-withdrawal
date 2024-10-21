@@ -12,8 +12,27 @@ logging:
   level:
     root: INFO
     tgb.cryptoexchange: DEBUG
+    org.springframework.boot.context.config: DEBUG
   file:
     name: logs/cryptowithdrawal.log
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+security:
+  username: "rce"
+  password: "12345678"
+isDev: true
+turn:
+  BITCOIN: true
+  LITECOIN: true
+  USDT: true
+  MONERO: true
+credentials:
+  BITCOIN:
+    rpcUser: "user"
+    rpcPassword: ""
+url:
+  BITCOIN: ""
+
+jwt:
+  expiration: 10
