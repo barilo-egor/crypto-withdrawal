@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -17,14 +18,8 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
+    @Value("${jwt.key}")
     private String secretKey;
-
-    public JwtUtil() {
-        // Создаем массив байт для ключа (например, 256 бит для HS256)
-        byte[] keyBytes = new byte[32];  // 32 байта = 256 бит
-        SecretKey key = Keys.hmacShaKeyFor(keyBytes);  // Генерация SecretKey
-        secretKey = Base64.getEncoder().encodeToString(key.getEncoded());  // Кодируем в Base64 строку
-    }
 
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);

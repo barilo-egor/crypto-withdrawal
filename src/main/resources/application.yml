@@ -24,9 +24,6 @@ security:
 isDev: true
 turn:
   BITCOIN: true
-  LITECOIN: true
-  USDT: true
-  MONERO: true
 credentials:
   BITCOIN:
     rpcUser: "user"
@@ -35,4 +32,4 @@ url:
   BITCOIN: ""
 
 jwt:
-  expiration: 10
+  key: FsT7sLaHUhljk9l7sFDRmL6ZGCYiKL2EZC1jjTOH
