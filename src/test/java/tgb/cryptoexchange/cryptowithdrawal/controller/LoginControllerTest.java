@@ -3,9 +3,9 @@ package tgb.cryptoexchange.cryptowithdrawal.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,6 +26,12 @@ class LoginControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Value("${security.username}")
+    private String username;
+
+    @Value("${security.password}")
+    private String password;
 
     @BeforeEach
     public void setUp() {
@@ -49,8 +55,8 @@ class LoginControllerTest {
     @Test
     public void testWithValidCredentials() throws Exception {
         mockMvc.perform(post("/authenticate")
-                .param("username", "test")
-                .param("password", "111111111"))
+                .param("username", username)
+                .param("password", password))
                 .andExpect(status().isOk());
     }
 }
