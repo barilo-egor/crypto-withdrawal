@@ -1,13 +1,11 @@
 spring:
   config:
-    import: "optional:config/cryptowithdrawal/config.yml"
+    import: "file:config/crypto_withdrawal/config.yml"
   application:
     name: crypto-withdrawal
   mvc:
     servlet:
       path: /crypto_withdrawal
-
-
 logging:
   level:
     root: INFO
@@ -18,18 +16,7 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
-security:
-  username: "rce"
-  password: "12345678"
-isDev: true
-turn:
-  BITCOIN: true
-credentials:
-  BITCOIN:
-    rpcUser: "user"
-    rpcPassword: ""
-url:
-  BITCOIN: ""
-
 jwt:
-  key: L5HeWr7eNBbGU7mlIwXRTBR0UZZLK8TWMtjEs0V0NqM
+  privateKeyPath: classpath:private.key
+  publicKeyPath: classpath:public.key
+  tokenExpirationMs: 3600000
