@@ -5,7 +5,7 @@ import tgb.cryptoexchange.enums.CryptoCurrency;
 
 import java.math.BigDecimal;
 
-public interface IBalanceService {
+public interface IBalanceRetriever {
 
     BigDecimal getBalance();
 

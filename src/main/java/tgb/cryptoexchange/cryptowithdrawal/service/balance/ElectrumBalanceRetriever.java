@@ -20,31 +20,18 @@ import java.util.Objects;
 
 @Service
 @Slf4j
-public class BitcoinBalanceService implements IBalanceService {
+public abstract class ElectrumBalanceRetriever implements IBalanceRetriever {
 
     @Value("${isDev:#{false}}")
     private boolean isDev;
 
-    @Value("${turn.BITCOIN:#{false}}")
-    private boolean isBitcoinWithdrawalOn;
-
-    @Value("${credentials.BITCOIN.rpcUser}")
-    private String rpcUser;
-
-    @Value("${credentials.BITCOIN.rpcPassword}")
-    private String rpcPassword;
-
-    @Value("${url.BITCOIN}")
-    private String url;
-
-    @Override
     public BigDecimal getBalance() {
         if (isDev) {
             log.debug("Включен режим разработчика. Возвращается заглушка для баланса.");
             return new BigDecimal(500);
         }
-        if (!isBitcoinWithdrawalOn) {
-            throw new RuntimeException("Автовывод для " + CryptoCurrency.BITCOIN.name() + " выключен.");
+        if (!isWithdrawalOn()) {
+            throw new RuntimeException("Автовывод для " + getCryptoCurrency().name() + " выключен.");
         }
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setConnectTimeout(5000);
@@ -58,10 +45,11 @@ public class BitcoinBalanceService implements IBalanceService {
         params.put("jsonrpc", "2.0");
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth(rpcUser, rpcPassword);
+        headers.setBasicAuth(getRpcUser(), getRpcPassword());
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(params, headers);
 
-        ResponseEntity<GetBalanceElectrumResponse> responseEntity = restTemplate.exchange(url, HttpMethod.POST, request, GetBalanceElectrumResponse.class);
+        ResponseEntity<GetBalanceElectrumResponse> responseEntity =
+                restTemplate.exchange(getUrl(), HttpMethod.POST, request, GetBalanceElectrumResponse.class);
         GetBalanceElectrumResponse response = responseEntity.getBody();
         if (Objects.isNull(response)) {
             throw new RuntimeException("Отсутствует объект ответа.");
@@ -69,7 +57,8 @@ public class BitcoinBalanceService implements IBalanceService {
         if (Objects.nonNull(response.getResult()) && StringUtils.isNotBlank(response.getResult().getConfirmed())) {
             return new BigDecimal(response.getResult().getConfirmed());
         } else if (Objects.nonNull(response.getError())) {
-            String message = "Ошибка получения баланса для " + CryptoCurrency.BITCOIN.name() + ". Сообщение от electrum: " + response.getError().getMessage();
+            String message = "Ошибка получения баланса для " + CryptoCurrency.BITCOIN.name()
+                    + ". Сообщение от electrum: " + response.getError().getMessage();
             throw new RuntimeException(message);
         } else {
             String message = "В ответе при получении баланса отсутствуют confirmed и error.";
@@ -78,8 +67,11 @@ public class BitcoinBalanceService implements IBalanceService {
         }
     }
 
-    @Override
-    public CryptoCurrency getCryptoCurrency() {
-        return CryptoCurrency.BITCOIN;
-    }
+    public abstract boolean isWithdrawalOn();
+
+    public abstract String getRpcUser();
+
+    public abstract String getRpcPassword();
+
+    public abstract String getUrl();
 }

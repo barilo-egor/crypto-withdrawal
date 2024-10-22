@@ -5,28 +5,36 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import tgb.cryptoexchange.cryptowithdrawal.service.balance.IBalanceService;
+import tgb.cryptoexchange.controller.ApiController;
+import tgb.cryptoexchange.cryptowithdrawal.service.balance.IBalanceRetriever;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 import tgb.cryptoexchange.web.ApiResponse;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-public class WithdrawalController {
+public class WithdrawalController extends ApiController {
 
-    private final Map<CryptoCurrency, IBalanceService> balanceServiceMap;
+    private final Map<CryptoCurrency, IBalanceRetriever> balanceRetrieversMap;
 
-    public WithdrawalController(List<IBalanceService> balanceServices) {
-        balanceServiceMap = new HashMap<>();
-        for (IBalanceService balanceService : balanceServices) {
-            balanceServiceMap.put(balanceService.getCryptoCurrency(), balanceService);
+    public WithdrawalController(List<IBalanceRetriever> balanceServices) {
+        balanceRetrieversMap = new HashMap<>();
+        for (IBalanceRetriever balanceService : balanceServices) {
+            balanceRetrieversMap.put(balanceService.getCryptoCurrency(), balanceService);
         }
     }
 
     @GetMapping("/balance")
-    public ResponseEntity<ApiResponse> balance(@RequestParam CryptoCurrency cryptoCurrency) {
-        return new ResponseEntity<>(ApiResponse.success(balanceServiceMap.get(cryptoCurrency).getBalance()), HttpStatus.OK);
+    public ResponseEntity<ApiResponse<BigDecimal>> balance(@RequestParam CryptoCurrency cryptoCurrency) {
+        IBalanceRetriever balanceRetriever = balanceRetrieversMap.get(cryptoCurrency);
+        if (balanceRetriever == null) {
+            return new ResponseEntity<>(ApiResponse.error(
+                    ApiResponse.Error.builder().message("Автовывод для данной криптовалюты не предусмотрен.").build()),
+                    HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(ApiResponse.success(balanceRetrieversMap.get(cryptoCurrency).getBalance()), HttpStatus.OK);
     }
 }
