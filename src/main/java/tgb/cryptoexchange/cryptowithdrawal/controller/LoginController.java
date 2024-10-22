@@ -25,7 +25,7 @@ public class LoginController {
     }
 
     @PostMapping("/authenticate")
-    public String createToken(@RequestParam String username, @RequestParam String password) throws Exception {
+    public String createToken(@RequestParam String username, @RequestParam String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         return jwtUtil.generateToken(userDetails.getUsername());
