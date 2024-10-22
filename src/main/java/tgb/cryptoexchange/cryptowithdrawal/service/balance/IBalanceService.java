@@ -1,6 +1,7 @@
 package tgb.cryptoexchange.cryptowithdrawal.service.balance;
 
-import tgb.cryptoexchange.CryptoCurrency;
+
+import tgb.cryptoexchange.enums.CryptoCurrency;
 
 import java.math.BigDecimal;
 

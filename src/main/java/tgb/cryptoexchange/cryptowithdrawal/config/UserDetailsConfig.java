@@ -26,7 +26,7 @@ public class UserDetailsConfig {
     public UserDetailsService userDetailsService() {
         UserDetails user = User.withUsername(username)
                 .password(passwordEncoder.encode(password))
-                .authorities(new String[0])
+                .authorities("ROLE_USER")
                 .build();
         return new InMemoryUserDetailsManager(user);
     }

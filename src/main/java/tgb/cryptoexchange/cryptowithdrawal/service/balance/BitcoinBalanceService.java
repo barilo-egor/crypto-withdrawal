@@ -10,8 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import tgb.cryptoexchange.CryptoCurrency;
 import tgb.cryptoexchange.cryptowithdrawal.vo.GetBalanceElectrumResponse;
+import tgb.cryptoexchange.enums.CryptoCurrency;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

@@ -2,6 +2,7 @@ package tgb.cryptoexchange.cryptowithdrawal.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,10 +29,11 @@ public class JwtUtil {
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        return Jwts.builder().claims(claims)
-                .subject(username)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 3600000))
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 час
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -51,16 +53,12 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        SecretKey key = Keys.hmacShaKeyFor(secretKey.getBytes());
-
-        return Jwts.parser()
-                .verifyWith(key)
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseClaimsJws(token)
+                .getBody();
     }
-
-
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
