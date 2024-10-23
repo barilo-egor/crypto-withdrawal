@@ -1,0 +1,12 @@
+security:
+  username: "rce"
+  password: "12345678"
+isDev: true
+turn:
+  BITCOIN: true
+credentials:
+  BITCOIN:
+    rpcUser: "user"
+    rpcPassword: ""
+url:
+  BITCOIN: ""

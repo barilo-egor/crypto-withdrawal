@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: crypto-withdrawal
+  mvc:
+    servlet:
+      path: /crypto_withdrawal
+jwt:
+  privateKeyPath: classpath:private.key
+  publicKeyPath: classpath:public.key
+  tokenExpirationMs: 3600000
+security:
+  username: "test"
+  password: "11111111"
+isDev: true
+turn:
+  BITCOIN: true
+credentials:
+  BITCOIN:
+    rpcUser: "user"
+    rpcPassword: ""
+url:
+  BITCOIN: ""

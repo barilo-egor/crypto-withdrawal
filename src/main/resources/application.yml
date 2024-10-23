@@ -1,0 +1,22 @@
+spring:
+  config:
+    import: "file:config/crypto_withdrawal/config.yml"
+  application:
+    name: crypto-withdrawal
+  mvc:
+    servlet:
+      path: /crypto_withdrawal
+logging:
+  level:
+    root: INFO
+    tgb.cryptoexchange: DEBUG
+    org.springframework.boot.context.config: DEBUG
+  file:
+    name: logs/cryptowithdrawal.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+jwt:
+  privateKeyPath: classpath:private.key
+  publicKeyPath: classpath:public.key
+  tokenExpirationMs: 3600000
