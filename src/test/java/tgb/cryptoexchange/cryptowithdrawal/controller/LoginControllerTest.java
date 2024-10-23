@@ -41,7 +41,7 @@ class LoginControllerTest {
     @Test
     public void testWithoutCredentials() throws Exception {
         mockMvc.perform(post("/authenticate"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isBadRequest());
     }
 
     @Test

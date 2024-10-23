@@ -2,6 +2,7 @@ package tgb.cryptoexchange.cryptowithdrawal.service.balance;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 
@@ -20,6 +21,10 @@ public class BitcoinBalanceRetriever extends ElectrumBalanceRetriever {
 
     @Value("${url.BITCOIN}")
     private String url;
+
+    public BitcoinBalanceRetriever(RestTemplateBuilder restTemplateBuilder) {
+        super(restTemplateBuilder);
+    }
 
     @Override
     public CryptoCurrency getCryptoCurrency() {

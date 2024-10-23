@@ -44,4 +44,17 @@ class WithdrawalControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(new ObjectMapper().writeValueAsString(expected)));
     }
+
+    @Test
+    public void testUnknownCryptoCurrency() throws Exception {
+        String token = jwtUtil.generateToken(username);
+        ApiResponse<BigDecimal> expected = new ApiResponse<>();
+        expected.setSuccess(false);
+        expected.setError(ApiResponse.Error.builder().message("Автовывод для данной криптовалюты не предусмотрен.").build());
+        mockMvc.perform(get("/balance")
+                        .header("Authorization", "Bearer " + token)
+                        .param("cryptoCurrency", CryptoCurrency.MONERO.name()))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().json(new ObjectMapper().writeValueAsString(expected)));
+    }
 }

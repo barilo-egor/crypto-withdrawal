@@ -1,6 +1,7 @@
 package tgb.cryptoexchange.cryptowithdrawal.service.balance;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 
@@ -18,6 +19,10 @@ public class LitecoinBalanceRetriever extends ElectrumBalanceRetriever {
 
     @Value("${url.BITCOIN}")
     private String url;
+
+    public LitecoinBalanceRetriever(RestTemplateBuilder restTemplateBuilder) {
+        super(restTemplateBuilder);
+    }
 
     @Override
     public boolean isWithdrawalOn() {
