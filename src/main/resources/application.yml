@@ -2,7 +2,7 @@ server:
   port: 8082
 spring:
   config:
-    import: "file:config/crypto_withdrawal/config.yml"
+    import: "file:config/config.yml"
   application:
     name: crypto-withdrawal
   mvc:
@@ -19,6 +19,6 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
 jwt:
-  privateKeyPath: classpath:private.key
-  publicKeyPath: classpath:public.key
+  privateKeyPath: "file:config/private.key"
+  publicKeyPath: "file:config/public.key"
   tokenExpirationMs: 3600000
