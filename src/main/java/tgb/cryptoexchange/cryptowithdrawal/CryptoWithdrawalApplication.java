@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = "tgb.cryptoexchange")
 public class CryptoWithdrawalApplication {
-//test
+
     public static void main(String[] args) {
         SpringApplication.run(CryptoWithdrawalApplication.class, args);
     }
