@@ -5,9 +5,6 @@ spring:
     import: "file:config/config.yml"
   application:
     name: crypto-withdrawal
-  mvc:
-    servlet:
-      path: /crypto_withdrawal
 logging:
   level:
     root: INFO
