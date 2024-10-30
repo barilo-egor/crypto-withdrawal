@@ -11,13 +11,13 @@ public class LitecoinBalanceRetriever extends ElectrumBalanceRetriever {
     @Value("${turn.LITECOIN:#{false}}")
     private boolean isLitecoinWithdrawalOn;
 
-    @Value("${credentials.BITCOIN.rpcUser}")
+    @Value("${credentials.LITECOIN.rpcUser}")
     private String rpcUser;
 
-    @Value("${credentials.BITCOIN.rpcPassword}")
+    @Value("${credentials.LITECOIN.rpcPassword}")
     private String rpcPassword;
 
-    @Value("${url.BITCOIN}")
+    @Value("${url.LITECOIN}")
     private String url;
 
     public LitecoinBalanceRetriever(RestTemplateBuilder restTemplateBuilder) {
