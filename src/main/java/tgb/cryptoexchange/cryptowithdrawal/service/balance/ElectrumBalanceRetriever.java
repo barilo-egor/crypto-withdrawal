@@ -64,6 +64,7 @@ public abstract class ElectrumBalanceRetriever implements IBalanceRetriever {
             log.error("{}\nОтвет: {}", message, response);
             throw new RuntimeException(message);
         }
+        log.debug("Ответ получения баланса {}: {}", getCryptoCurrency().name(), response);
         return new BigDecimal(response.getResult().getConfirmed());
     }
 
