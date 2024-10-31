@@ -4,9 +4,11 @@ security:
 isDev: true
 turn:
   BITCOIN: true
+  LITECOIN: true
 credentials:
   BITCOIN:
     rpcUser: "user"
     rpcPassword: ""
 url:
   BITCOIN: ""
+  LITECOIN: ""
