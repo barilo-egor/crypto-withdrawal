@@ -18,4 +18,4 @@ logging:
 jwt:
   privateKeyPath: "file:config/private.key"
   publicKeyPath: "file:config/public.key"
-  tokenExpirationMs: 3600000
+  tokenExpirationMs: 30000
