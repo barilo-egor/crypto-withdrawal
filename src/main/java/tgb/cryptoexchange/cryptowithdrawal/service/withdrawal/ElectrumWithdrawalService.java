@@ -59,7 +59,7 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
             throw new RuntimeException("Ответ отправки транзакции в сеть пуст.");
         }
         if (Objects.nonNull(response.getError())) {
-            log.error("Ошибка при создании транзакции. Ответ: {}", response);
+            log.error("Ошибка при отправке транзакции в сеть. Ответ: {}", response);
             throw new RuntimeException("Ошибка при создании транзакции. Код: " + response.getError().getCode()
                     + ", сообщение: " + response.getError().getMessage());
         }
