@@ -13,10 +13,10 @@ public class LitecoinWithdrawalService extends ElectrumWithdrawalService {
     private String url;
 
     @Value("${credentials.LITECOIN.rpcUser}")
-    private String username;
+    private String rpcUser;
 
     @Value("${credentials.LITECOIN.rpcPassword}")
-    private String password;
+    private String rpcPassword;
 
     public LitecoinWithdrawalService(RestTemplate restTemplate) {
         super(restTemplate);
@@ -29,12 +29,12 @@ public class LitecoinWithdrawalService extends ElectrumWithdrawalService {
 
     @Override
     public String getRpcUser() {
-        return username;
+        return rpcUser;
     }
 
     @Override
     public String getRpcPassword() {
-        return password;
+        return rpcPassword;
     }
 
     @Override

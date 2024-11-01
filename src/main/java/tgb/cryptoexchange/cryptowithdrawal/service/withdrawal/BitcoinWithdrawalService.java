@@ -13,10 +13,10 @@ public class BitcoinWithdrawalService extends ElectrumWithdrawalService implemen
     private String url;
 
     @Value("${credentials.BITCOIN.rpcUser}")
-    private String username;
+    private String rpcUser;
 
     @Value("${credentials.BITCOIN.rpcPassword}")
-    private String password;
+    private String rpcPassword;
 
     public BitcoinWithdrawalService(RestTemplate restTemplate) {
         super(restTemplate);
@@ -29,12 +29,12 @@ public class BitcoinWithdrawalService extends ElectrumWithdrawalService implemen
 
     @Override
     public String getRpcUser() {
-        return username;
+        return rpcUser;
     }
 
     @Override
     public String getRpcPassword() {
-        return password;
+        return rpcPassword;
     }
 
     @Override
