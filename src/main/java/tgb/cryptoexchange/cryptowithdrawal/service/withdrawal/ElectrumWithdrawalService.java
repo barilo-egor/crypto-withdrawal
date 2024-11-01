@@ -29,8 +29,7 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
     public ElectrumWithdrawalService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         headers = new HttpHeaders();
-        String authHeader = "Basic " + java.util.Base64.getEncoder().encodeToString(getAuth().getBytes());
-        headers.set("Authorization", authHeader);
+        headers.setBasicAuth(getRpcUser(), getRpcPassword());
         headers.set("Content-type", "application/json");
     }
 
@@ -97,7 +96,9 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
 
     public abstract String getUrl();
 
-    public abstract String getAuth();
+    public abstract String getRpcUser();
+
+    public abstract String getRpcPassword();
 
     public abstract String getDevMinSum();
 

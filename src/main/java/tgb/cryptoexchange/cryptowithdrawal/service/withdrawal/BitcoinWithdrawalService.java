@@ -28,8 +28,13 @@ public class BitcoinWithdrawalService extends ElectrumWithdrawalService implemen
     }
 
     @Override
-    public String getAuth() {
-        return username + ":" + password;
+    public String getRpcUser() {
+        return username;
+    }
+
+    @Override
+    public String getRpcPassword() {
+        return password;
     }
 
     @Override
