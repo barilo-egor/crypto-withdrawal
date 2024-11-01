@@ -1,5 +1,6 @@
 package tgb.cryptoexchange.cryptowithdrawal.service.withdrawal;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -22,14 +23,19 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
 
     private int id = 1;
 
-    private final RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
-    private final HttpHeaders headers;
+    private HttpHeaders headers;
 
     public ElectrumWithdrawalService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    @PostConstruct
+    public void init(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
         headers = new HttpHeaders();
-//        headers.setBasicAuth(getRpcUser(), getRpcPassword());
+        headers.setBasicAuth(getRpcUser(), getRpcPassword());
         headers.set("Content-type", "application/json");
     }
 
