@@ -17,8 +17,8 @@ import java.util.Objects;
 @Slf4j
 public abstract class ElectrumWithdrawalService implements IWithdrawalService {
 
-    @Value("${isDev:#{false}}")
-    private boolean isDev;
+    @Value("${minSum:#{false}}")
+    private boolean isMinSum;
 
     private int id = 1;
 
@@ -36,7 +36,7 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
 
     @Override
     public void withdrawal(String address, String amount) {
-        if (isDev) {
+        if (isMinSum) {
             amount = getDevMinSum();
         }
         log.debug("Запрос на автовывод amount={}, address={}", amount, address);
