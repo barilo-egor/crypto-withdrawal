@@ -3,17 +3,17 @@ package tgb.cryptoexchange.cryptowithdrawal.service.withdrawal;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
-import tgb.cryptoexchange.cryptowithdrawal.vo.BroadcastElectrumRequest;
-import tgb.cryptoexchange.cryptowithdrawal.vo.PayToElectrumRequest;
-import tgb.cryptoexchange.cryptowithdrawal.vo.SingleTransactionElectrumResponse;
+import tgb.cryptoexchange.cryptowithdrawal.vo.*;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 public abstract class ElectrumWithdrawalService implements IWithdrawalService {
@@ -39,18 +39,22 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
     }
 
     @Override
+    public String withdrawal(List<Pair<String, String>> addressAmountPairs) {
+        String signedTransaction = createTransaction(addressAmountPairs);
+        return broadcast(signedTransaction);
+    }
+
+    @Override
     public String withdrawal(String address, String amount) {
         if (isMinSum) {
             amount = getDevMinSum();
         }
-        log.debug("Запрос на автовывод amount={}, address={}", amount, address);
-        log.debug("Создание транзакции.");
-        String signedTransaction = createTransaction(address, amount);
-        log.debug("Отправка транзакции {} в сеть.", signedTransaction);
+        String signedTransaction = createTransaction(List.of(Pair.of(address, amount)));
         return broadcast(signedTransaction);
     }
 
     private String broadcast(String signedTransaction) {
+        log.debug("Отправка транзакции {} в сеть.", signedTransaction);
         BroadcastElectrumRequest broadcastRequest = BroadcastElectrumRequest.builder()
                 .id(String.valueOf(id++))
                 .params(List.of(signedTransaction))
@@ -71,14 +75,33 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
         return response.getResult();
     }
 
-    private String createTransaction(String address, String amount) {
-        HttpEntity<PayToElectrumRequest> entity = new HttpEntity<>(
-                PayToElectrumRequest.builder()
-                        .id(String.valueOf(id++))
-                        .params(List.of(address, amount))
-                        .build(),
-                headers
-        );
+    private String createTransaction(List<Pair<String, String>> params) {
+        log.debug("Запрос на создание транзакции для пар адрес-сумма: \n{}", params);
+        if (Objects.isNull(params) || params.isEmpty()) {
+            throw new RuntimeException("Список сделок для создания транзакции пуст.");
+        }
+        boolean isSingleAddress = params.size() == 1;
+        List<Object> paramsList = isSingleAddress
+                ? List.of(params.getFirst().getFirst(), params.getFirst().getSecond())
+                : params.stream().map(pair -> List.of(pair.getFirst(), isMinSum ? getDevMinSum() : pair.getSecond())).collect(Collectors.toList());
+        HttpEntity<? extends ElectrumRequest> entity;
+        if (isSingleAddress) {
+            entity = new HttpEntity<>(
+                    PayToElectrumRequest.builder()
+                            .id(String.valueOf(id++))
+                            .params(paramsList)
+                            .build(),
+                    headers
+            );
+        } else {
+            entity = new HttpEntity<>(
+                    PayToManyElectrumRequest.builder()
+                            .id(String.valueOf(id++))
+                            .params(paramsList)
+                            .build(),
+                    headers
+            );
+        }
         SingleTransactionElectrumResponse response = restTemplate.exchange(
                 getUrl(), HttpMethod.POST, entity, SingleTransactionElectrumResponse.class
         ).getBody();

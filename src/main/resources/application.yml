@@ -5,6 +5,16 @@ spring:
     import: "file:config/config.yml"
   application:
     name: crypto-withdrawal
+  datasource:
+    url: "jdbc:sqlite:cryptowithdrawal.db"
+    driver-class-name: "org.sqlite.JDBC"
+    username: ""
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+        hibernate.dialect: org.hibernate.community.dialect.SQLiteDialect
 logging:
   level:
     root: INFO
