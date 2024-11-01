@@ -39,7 +39,7 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
     }
 
     @Override
-    public void withdrawal(String address, String amount) {
+    public String withdrawal(String address, String amount) {
         if (isMinSum) {
             amount = getDevMinSum();
         }
@@ -47,10 +47,10 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
         log.debug("Создание транзакции.");
         String signedTransaction = createTransaction(address, amount);
         log.debug("Отправка транзакции {} в сеть.", signedTransaction);
-        broadcast(signedTransaction);
+        return broadcast(signedTransaction);
     }
 
-    private void broadcast(String signedTransaction) {
+    private String broadcast(String signedTransaction) {
         BroadcastElectrumRequest broadcastRequest = BroadcastElectrumRequest.builder()
                 .id(String.valueOf(id++))
                 .params(List.of(signedTransaction))
@@ -68,6 +68,7 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
                     + ", сообщение: " + response.getError().getMessage());
         }
         log.info("Транзакция отправлена. Ответ: {}", response);
+        return response.getResult();
     }
 
     private String createTransaction(String address, String amount) {

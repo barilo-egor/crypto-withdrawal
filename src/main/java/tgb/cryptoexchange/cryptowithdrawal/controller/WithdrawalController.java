@@ -46,10 +46,10 @@ public class WithdrawalController extends ApiController {
     }
 
     @PostMapping("/withdrawal")
-    public ResponseEntity<ApiResponse<Boolean>> withdrawal(@RequestBody WithdrawalRequest withdrawalRequest) {
-        withdrawalServiceMap.get(withdrawalRequest.cryptoCurrency())
+    public ResponseEntity<ApiResponse<String>> withdrawal(@RequestBody WithdrawalRequest withdrawalRequest) {
+        String transactionHash = withdrawalServiceMap.get(withdrawalRequest.cryptoCurrency())
                 .withdrawal(withdrawalRequest.address(), withdrawalRequest.amount());
-        return new ResponseEntity<>(ApiResponse.success(true), HttpStatus.OK);
+        return new ResponseEntity<>(ApiResponse.success(transactionHash), HttpStatus.OK);
     }
 
 }

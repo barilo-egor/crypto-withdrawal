@@ -4,7 +4,7 @@ import tgb.cryptoexchange.enums.CryptoCurrency;
 
 public interface IWithdrawalService {
 
-    void withdrawal(String address, String amount);
+    String withdrawal(String address, String amount);
 
     CryptoCurrency getCryptoCurrency();
 
