@@ -17,7 +17,7 @@ import java.util.Objects;
 @Slf4j
 public abstract class ElectrumWithdrawalService implements IWithdrawalService {
 
-    @Value("${isDev:#{false}")
+    @Value("${isDev:#{false}}")
     private boolean isDev;
 
     private int id = 1;
