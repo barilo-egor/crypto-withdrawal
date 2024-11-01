@@ -23,7 +23,7 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
 
     private int id = 1;
 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     private HttpHeaders headers;
 
@@ -32,8 +32,7 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
     }
 
     @PostConstruct
-    public void init(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public void init() {
         headers = new HttpHeaders();
         headers.setBasicAuth(getRpcUser(), getRpcPassword());
         headers.set("Content-type", "application/json");
