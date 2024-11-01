@@ -17,6 +17,9 @@ public class LitecoinWithdrawalService extends ElectrumWithdrawalService {
     @Value("${credentials.LITECOIN.rpcPassword}")
     private String rpcPassword;
 
+    @Value("${minSum.LITECOIN}")
+    private String minSum;
+
     public LitecoinWithdrawalService(RestTemplate restTemplate) {
         super(restTemplate);
     }
@@ -38,7 +41,7 @@ public class LitecoinWithdrawalService extends ElectrumWithdrawalService {
 
     @Override
     public String getDevMinSum() {
-        return "0.001";
+        return minSum;
     }
 
     @Override

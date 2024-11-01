@@ -2,7 +2,10 @@ security:
   username: "rce"
   password: "12345678"
 isDev: true
-minSum: true
+minSum:
+  isOn: true
+  BITCOIN: "0.00000546"
+  LITECOIN: "0.002"
 turn:
   BITCOIN: true
   LITECOIN: true

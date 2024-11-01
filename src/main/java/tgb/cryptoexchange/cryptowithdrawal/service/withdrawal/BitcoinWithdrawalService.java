@@ -1,6 +1,5 @@
 package tgb.cryptoexchange.cryptowithdrawal.service.withdrawal;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,6 +16,9 @@ public class BitcoinWithdrawalService extends ElectrumWithdrawalService implemen
 
     @Value("${credentials.BITCOIN.rpcPassword}")
     private String rpcPassword;
+
+    @Value("${minSum.BITCOIN}")
+    private String minSum;
 
     public BitcoinWithdrawalService(RestTemplate restTemplate) {
         super(restTemplate);
@@ -39,7 +41,7 @@ public class BitcoinWithdrawalService extends ElectrumWithdrawalService implemen
 
     @Override
     public String getDevMinSum() {
-        return "0.00000546";
+        return minSum;
     }
 
     @Override

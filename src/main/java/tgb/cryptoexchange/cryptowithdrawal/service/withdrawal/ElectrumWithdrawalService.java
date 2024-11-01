@@ -18,7 +18,7 @@ import java.util.Objects;
 @Slf4j
 public abstract class ElectrumWithdrawalService implements IWithdrawalService {
 
-    @Value("${minSum:#{false}}")
+    @Value("${minSum.isOn:#{false}}")
     private boolean isMinSum;
 
     private int id = 1;
