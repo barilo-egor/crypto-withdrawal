@@ -1,5 +1,6 @@
 server:
-  port: 8082
+  port: 8080
+
 spring:
   config:
     import: "file:config/config.yml"
@@ -15,6 +16,13 @@ spring:
       ddl-auto: update
     properties:
         hibernate.dialect: org.hibernate.community.dialect.SQLiteDialect
+  kafka:
+    bootstrap-servers: kafka-broker.paysendmmm.online:9093
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    properties:
+      security.protocol: SSL
 logging:
   level:
     root: INFO
