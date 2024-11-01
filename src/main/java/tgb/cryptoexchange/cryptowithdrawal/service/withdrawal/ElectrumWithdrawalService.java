@@ -29,7 +29,7 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
     public ElectrumWithdrawalService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
         headers = new HttpHeaders();
-        headers.setBasicAuth(getRpcUser(), getRpcPassword());
+//        headers.setBasicAuth(getRpcUser(), getRpcPassword());
         headers.set("Content-type", "application/json");
     }
 
