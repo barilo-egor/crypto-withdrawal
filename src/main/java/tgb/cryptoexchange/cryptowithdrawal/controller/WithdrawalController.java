@@ -2,12 +2,11 @@ package tgb.cryptoexchange.cryptowithdrawal.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tgb.cryptoexchange.controller.ApiController;
 import tgb.cryptoexchange.cryptowithdrawal.service.balance.IBalanceRetriever;
 import tgb.cryptoexchange.cryptowithdrawal.service.withdrawal.IWithdrawalService;
+import tgb.cryptoexchange.cryptowithdrawal.vo.WithdrawalRequest;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 import tgb.cryptoexchange.web.ApiResponse;
 
@@ -46,10 +45,10 @@ public class WithdrawalController extends ApiController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/withdrawal")
-    public ResponseEntity<ApiResponse<Boolean>> withdrawal(@RequestParam CryptoCurrency cryptoCurrency,
-            @RequestParam String address, @RequestParam String amount) {
-        withdrawalServiceMap.get(cryptoCurrency).withdrawal(address, amount);
+    @PostMapping("/withdrawal")
+    public ResponseEntity<ApiResponse<Boolean>> withdrawal(@RequestBody WithdrawalRequest withdrawalRequest) {
+        withdrawalServiceMap.get(withdrawalRequest.cryptoCurrency())
+                .withdrawal(withdrawalRequest.address(), withdrawalRequest.amount());
         return new ResponseEntity<>(ApiResponse.success(true), HttpStatus.OK);
     }
 
