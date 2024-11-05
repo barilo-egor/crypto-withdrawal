@@ -18,7 +18,6 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -66,6 +65,11 @@ public class PoolDealService implements IPoolDealService {
         Long id = poolDeal.getId();
         poolDealRepository.delete(poolDeal);
         return id;
+    }
+
+    @Override
+    public void deleteAll() {
+        poolDealRepository.deleteAll();
     }
 
     @Override

@@ -13,4 +13,5 @@ public interface IWithdrawalService {
 
     CryptoCurrency getCryptoCurrency();
 
+    boolean isOn();
 }

@@ -8,6 +8,9 @@ import tgb.cryptoexchange.enums.CryptoCurrency;
 @Service
 public class LitecoinWithdrawalService extends ElectrumWithdrawalService {
 
+    @Value("${turn.LITECOIN:#{false}}")
+    private boolean isBitcoinWithdrawalOn;
+
     @Value("${url.LITECOIN}")
     private String url;
 
@@ -47,6 +50,11 @@ public class LitecoinWithdrawalService extends ElectrumWithdrawalService {
     @Override
     public CryptoCurrency getCryptoCurrency() {
         return CryptoCurrency.LITECOIN;
+    }
+
+    @Override
+    public boolean isOn() {
+        return isBitcoinWithdrawalOn;
     }
 
 }

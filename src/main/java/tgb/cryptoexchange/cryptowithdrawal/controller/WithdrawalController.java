@@ -1,12 +1,10 @@
 package tgb.cryptoexchange.cryptowithdrawal.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tgb.cryptoexchange.controller.ApiController;
 import tgb.cryptoexchange.cryptowithdrawal.service.balance.IBalanceRetriever;
-import tgb.cryptoexchange.cryptowithdrawal.service.kafka.PoolTopicKafkaService;
 import tgb.cryptoexchange.cryptowithdrawal.service.withdrawal.IWithdrawalService;
 import tgb.cryptoexchange.cryptowithdrawal.vo.WithdrawalRequest;
 import tgb.cryptoexchange.enums.CryptoCurrency;
@@ -16,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 public class WithdrawalController extends ApiController {
@@ -54,12 +53,16 @@ public class WithdrawalController extends ApiController {
         return new ResponseEntity<>(ApiResponse.success(transactionHash), HttpStatus.OK);
     }
 
-    @Autowired
-    private PoolTopicKafkaService poolTopicKafkaService;
-
-    @GetMapping("/send")
-    public void send() {
-        poolTopicKafkaService.sendMessage("pool-complete", "test " + System.currentTimeMillis());
+    @GetMapping("/isOn")
+    public ResponseEntity<ApiResponse<Boolean>> isOn(@RequestParam CryptoCurrency cryptoCurrency) {
+        IWithdrawalService withdrawalService = withdrawalServiceMap.get(cryptoCurrency);
+        boolean isOn;
+        if (Objects.isNull(withdrawalService)) {
+            isOn = false;
+        } else {
+            isOn = withdrawalService.isOn();
+        }
+        return new ResponseEntity<>(ApiResponse.success(isOn), HttpStatus.OK);
     }
 
 }

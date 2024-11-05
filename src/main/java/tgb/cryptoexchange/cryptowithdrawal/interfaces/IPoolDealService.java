@@ -12,6 +12,8 @@ public interface IPoolDealService {
 
     Long delete(String bot, Long pid);
 
+    void deleteAll();
+
     String complete();
 
 }

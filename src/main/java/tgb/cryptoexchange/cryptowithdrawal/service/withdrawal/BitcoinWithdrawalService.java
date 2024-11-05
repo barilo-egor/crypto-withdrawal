@@ -8,6 +8,9 @@ import tgb.cryptoexchange.enums.CryptoCurrency;
 @Service
 public class BitcoinWithdrawalService extends ElectrumWithdrawalService implements IWithdrawalService {
 
+    @Value("${turn.BITCOIN:#{false}}")
+    private boolean isBitcoinWithdrawalOn;
+
     @Value("${url.BITCOIN}")
     private String url;
 
@@ -47,6 +50,11 @@ public class BitcoinWithdrawalService extends ElectrumWithdrawalService implemen
     @Override
     public CryptoCurrency getCryptoCurrency() {
         return CryptoCurrency.BITCOIN;
+    }
+
+    @Override
+    public boolean isOn() {
+        return isBitcoinWithdrawalOn;
     }
 
 }

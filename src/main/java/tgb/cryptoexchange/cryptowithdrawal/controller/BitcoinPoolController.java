@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tgb.cryptoexchange.cryptowithdrawal.interfaces.IPoolDealService;
+import tgb.cryptoexchange.cryptowithdrawal.interfaces.kafka.IPoolTopicKafkaService;
 import tgb.cryptoexchange.cryptowithdrawal.po.PoolDeal;
 import tgb.cryptoexchange.web.ApiResponse;
 
@@ -15,8 +16,11 @@ public class BitcoinPoolController {
 
     private final IPoolDealService poolDealService;
 
-    public BitcoinPoolController(IPoolDealService poolDealService) {
+    private final IPoolTopicKafkaService poolTopicKafkaService;
+
+    public BitcoinPoolController(IPoolDealService poolDealService, IPoolTopicKafkaService poolTopicKafkaService) {
         this.poolDealService = poolDealService;
+        this.poolTopicKafkaService = poolTopicKafkaService;
     }
 
     @GetMapping
@@ -33,17 +37,28 @@ public class BitcoinPoolController {
             );
         }
         poolDeal = poolDealService.save(poolDeal);
+        poolTopicKafkaService.sendUpdate();
         return new ResponseEntity<>(ApiResponse.success(poolDeal.getId()), HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping
     public ResponseEntity<ApiResponse<Long>> delete(@RequestBody PoolDeal poolDeal) {
         Long id = poolDealService.delete(poolDeal.getBot(), poolDeal.getPid());
+        poolTopicKafkaService.sendUpdate();
         return new ResponseEntity<>(ApiResponse.success(id), HttpStatus.ACCEPTED);
+    }
+
+    @DeleteMapping("/all")
+    public ResponseEntity<ApiResponse<Boolean>> deleteAll() {
+        poolDealService.deleteAll();
+        poolTopicKafkaService.sendUpdate();
+        return new ResponseEntity<>(ApiResponse.success(true), HttpStatus.OK);
     }
 
     @PostMapping("/complete")
     public ResponseEntity<ApiResponse<String>> complete() {
-        return new ResponseEntity<>(ApiResponse.success(poolDealService.complete()), HttpStatus.OK);
+        String hash = poolDealService.complete();
+        poolTopicKafkaService.sendUpdate();
+        return new ResponseEntity<>(ApiResponse.success(hash), HttpStatus.OK);
     }
 }
