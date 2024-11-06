@@ -12,7 +12,10 @@ turn:
 credentials:
   BITCOIN:
     rpcUser: "user"
-    rpcPassword: ""
+    rpcPassword: "123"
+  LITECOIN:
+    rpcUser: "user"
+    rpcPassword: "123"
 url:
   BITCOIN: ""
   LITECOIN: ""

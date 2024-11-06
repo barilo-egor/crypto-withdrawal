@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 public class WithdrawalController extends ApiController {
@@ -50,6 +51,18 @@ public class WithdrawalController extends ApiController {
         String transactionHash = withdrawalServiceMap.get(withdrawalRequest.cryptoCurrency())
                 .withdrawal(withdrawalRequest.address(), withdrawalRequest.amount());
         return new ResponseEntity<>(ApiResponse.success(transactionHash), HttpStatus.OK);
+    }
+
+    @GetMapping("/isOn")
+    public ResponseEntity<ApiResponse<Boolean>> isOn(@RequestParam CryptoCurrency cryptoCurrency) {
+        IWithdrawalService withdrawalService = withdrawalServiceMap.get(cryptoCurrency);
+        boolean isOn;
+        if (Objects.isNull(withdrawalService)) {
+            isOn = false;
+        } else {
+            isOn = withdrawalService.isOn();
+        }
+        return new ResponseEntity<>(ApiResponse.success(isOn), HttpStatus.OK);
     }
 
 }

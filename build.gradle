@@ -27,6 +27,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.projectlombok:lombok'
@@ -37,8 +38,10 @@ dependencies {
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
     runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.78.1'
-
+    implementation 'org.xerial:sqlite-jdbc:3.47.0.0'
     implementation 'tgb.cryptoexchange:common-api:1.0.0'
+    implementation 'org.hibernate.orm:hibernate-community-dialects:6.6.1.Final'
+    implementation 'org.springframework.kafka:spring-kafka'
 }
 
 tasks.named('test') {
