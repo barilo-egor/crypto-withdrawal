@@ -53,7 +53,9 @@ public class PoolDealService implements IPoolDealService {
 
     @Override
     public PoolDeal save(PoolDeal poolDeal) {
-        return poolDealRepository.save(poolDeal);
+        synchronized (this) {
+            return poolDealRepository.save(poolDeal);
+        }
     }
 
     @Override
@@ -61,15 +63,19 @@ public class PoolDealService implements IPoolDealService {
         PoolDeal poolDeal = poolDealRepository.findBy(
                         Example.of(PoolDeal.builder().bot(bot).pid(pid).build()),
                         FluentQuery.FetchableFluentQuery::all)
-                .stream().findFirst().orElseThrow(() -> new RuntimeException("PoolDeal not found"));
+                .stream().findFirst().orElseThrow(() -> new RuntimeException("Сделка не найдена."));
         Long id = poolDeal.getId();
-        poolDealRepository.delete(poolDeal);
+        synchronized (this) {
+            poolDealRepository.delete(poolDeal);
+        }
         return id;
     }
 
     @Override
     public void deleteAll() {
-        poolDealRepository.deleteAll();
+        synchronized (this) {
+            poolDealRepository.deleteAll();
+        }
     }
 
     @Override
@@ -89,7 +95,12 @@ public class PoolDealService implements IPoolDealService {
             throw new RuntimeException("На балансе недостаточно средств для вывода всех сделок.");
         }
         IWithdrawalService withdrawalService = withdrawalServiceMap.get(CryptoCurrency.BITCOIN);
-        return withdrawalService.withdrawal(pairs);
+        String hash;
+        synchronized (this) {
+            hash = withdrawalService.withdrawal(pairs);
+            deleteAll();
+        }
+        return hash;
     }
 
 }
