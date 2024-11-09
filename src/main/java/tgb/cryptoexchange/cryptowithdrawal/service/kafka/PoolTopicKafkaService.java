@@ -6,9 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import tgb.cryptoexchange.cryptowithdrawal.interfaces.kafka.IPoolTopicKafkaService;
-import tgb.cryptoexchange.cryptowithdrawal.vo.PoolCompleteResult;
-
-import java.util.List;
+import tgb.cryptoexchange.cryptowithdrawal.vo.PoolComplete;
 
 @Service
 public class PoolTopicKafkaService implements IPoolTopicKafkaService {
@@ -23,10 +21,10 @@ public class PoolTopicKafkaService implements IPoolTopicKafkaService {
     }
 
     @Override
-    public void complete(List<PoolCompleteResult> completeResults) {
+    public void complete(PoolComplete poolComplete) {
         String object;
         try {
-            object = objectMapper.writeValueAsString(completeResults);
+            object = objectMapper.writeValueAsString(poolComplete);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

@@ -12,6 +12,7 @@ import tgb.cryptoexchange.cryptowithdrawal.po.PoolDeal;
 import tgb.cryptoexchange.cryptowithdrawal.repository.PoolDealRepository;
 import tgb.cryptoexchange.cryptowithdrawal.service.balance.IBalanceRetriever;
 import tgb.cryptoexchange.cryptowithdrawal.service.withdrawal.IWithdrawalService;
+import tgb.cryptoexchange.cryptowithdrawal.vo.PoolComplete;
 import tgb.cryptoexchange.cryptowithdrawal.vo.PoolCompleteResult;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 
@@ -108,13 +109,16 @@ public class PoolDealService implements IPoolDealService {
             hash = withdrawalService.withdrawal(pairs);
             Map<String, List<PoolDeal>> sortedDeals = poolDeals.stream()
                     .collect(Collectors.groupingBy(PoolDeal::getBot, TreeMap::new, Collectors.toList()));
-            poolTopicKafkaService.complete(sortedDeals.entrySet().stream()
-                    .map(entry -> PoolCompleteResult.builder()
-                            .bot(entry.getKey())
-                            .pids(entry.getValue().stream().map(PoolDeal::getPid).toList())
-                            .build())
-                    .toList()
-            );
+            PoolComplete poolComplete = PoolComplete.builder()
+                    .hash(hash)
+                    .results(sortedDeals.entrySet().stream()
+                            .map(entry -> PoolCompleteResult.builder()
+                                    .bot(entry.getKey())
+                                    .pids(entry.getValue().stream().map(PoolDeal::getPid).toList())
+                                    .build())
+                            .toList())
+                    .build();
+            poolTopicKafkaService.complete(poolComplete);
             poolTopicKafkaService.poolUpdated("Пул был завершен.");
             deleteAll();
         }

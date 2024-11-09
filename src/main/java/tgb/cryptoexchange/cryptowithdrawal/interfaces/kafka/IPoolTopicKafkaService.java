@@ -1,13 +1,11 @@
 package tgb.cryptoexchange.cryptowithdrawal.interfaces.kafka;
 
 
-import tgb.cryptoexchange.cryptowithdrawal.vo.PoolCompleteResult;
-
-import java.util.List;
+import tgb.cryptoexchange.cryptowithdrawal.vo.PoolComplete;
 
 public interface IPoolTopicKafkaService {
 
-    void complete(List<PoolCompleteResult> completeResults);
+    void complete(PoolComplete poolComplete);
 
     void poolUpdated(String message);
 }
