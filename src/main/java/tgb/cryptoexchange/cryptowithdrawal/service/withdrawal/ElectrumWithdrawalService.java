@@ -90,8 +90,8 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
         }
         boolean isSingleAddress = params.size() == 1;
         List<Object> paramsList = isSingleAddress
-                ? List.of(params.getFirst().getFirst(), params.getFirst().getSecond())
-                : params.stream().map(pair -> List.of(pair.getFirst(), isMinSum ? getDevMinSum() : pair.getSecond())).collect(Collectors.toList());
+                ? List.of(params.getFirst().getFirst(), isMinSum ? getDevMinSum() : params.getFirst().getSecond())
+                : List.of(params.stream().map(pair -> List.of(pair.getFirst(), isPoolMinSum ? getDevMinSum() : pair.getSecond())).collect(Collectors.toList()));
         HttpEntity<? extends ElectrumRequest> entity;
         if (isSingleAddress) {
             entity = new HttpEntity<>(
