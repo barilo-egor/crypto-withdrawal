@@ -88,7 +88,7 @@ public class PoolDealService implements IPoolDealService {
     }
 
     @Override
-    public void deleteAll() {
+    public void clear() {
         synchronized (this) {
             log.debug("Очищение пула.");
             List<PoolDeal> poolDeals = poolDealRepository.findAll();
@@ -128,7 +128,7 @@ public class PoolDealService implements IPoolDealService {
                     .build();
             poolTopicKafkaService.put(poolOperation);
             poolTopicKafkaService.put("Пул был завершен.");
-            deleteAll();
+            poolDealRepository.deleteAll();
             log.debug("Пул успешно завершен, сделки удалены.");
         }
         return hash;

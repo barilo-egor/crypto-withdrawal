@@ -14,7 +14,7 @@ public interface IPoolDealService {
 
     Long delete(PoolDeal poolDeal);
 
-    void deleteAll();
+    void clear();
 
     String complete();
 
