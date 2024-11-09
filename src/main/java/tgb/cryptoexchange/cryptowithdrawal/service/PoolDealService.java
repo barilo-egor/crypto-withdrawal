@@ -18,10 +18,7 @@ import tgb.cryptoexchange.cryptowithdrawal.vo.PoolOperation;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -72,11 +69,13 @@ public class PoolDealService implements IPoolDealService {
         if (Objects.nonNull(poolDeal.getId())) {
             poolDeal = poolDealRepository.findById(poolDeal.getId()).orElseThrow(() -> new RuntimeException("Сделка не найдена."));
         } else {
-            poolDeal = poolDealRepository.findBy(
+            Optional<PoolDeal> optionalPoolDeal = poolDealRepository.findBy(
                             Example.of(poolDeal),
                             FluentQuery.FetchableFluentQuery::all).stream()
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Сделка не найдена."));
+                    .findFirst();
+            if (optionalPoolDeal.isEmpty()) {
+                return null;
+            }
         }
         synchronized (this) {
             poolDealRepository.delete(poolDeal);
