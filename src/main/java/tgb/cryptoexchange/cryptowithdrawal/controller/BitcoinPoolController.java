@@ -44,7 +44,7 @@ public class BitcoinPoolController {
 
     @DeleteMapping("/all")
     public ResponseEntity<ApiResponse<Boolean>> deleteAll() {
-        poolDealService.deleteAll();
+        poolDealService.clear();
         return new ResponseEntity<>(ApiResponse.success(true), HttpStatus.OK);
     }
 
