@@ -1,5 +1,7 @@
 package tgb.cryptoexchange.cryptowithdrawal.interfaces;
 
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import tgb.cryptoexchange.cryptowithdrawal.po.PoolDeal;
 
 import java.util.List;
@@ -16,4 +18,7 @@ public interface IPoolDealService {
 
     String complete();
 
+    @Scheduled(cron = "0 0/10 * * * ?")
+    @Async
+    void notifyDealsCount();
 }

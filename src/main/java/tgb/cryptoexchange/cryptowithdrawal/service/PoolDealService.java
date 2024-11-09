@@ -2,6 +2,8 @@ package tgb.cryptoexchange.cryptowithdrawal.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tgb.cryptoexchange.cryptowithdrawal.interfaces.IPoolDealService;
@@ -122,4 +124,13 @@ public class PoolDealService implements IPoolDealService {
         return hash;
     }
 
+    @Scheduled(cron = "0 0/10 * * * ?")
+    @Async
+    @Override
+    public void notifyDealsCount() {
+        List<PoolDeal> poolDeals = poolDealRepository.findAll();
+        if (!poolDeals.isEmpty()) {
+            poolTopicKafkaService.put("В пуле BTC на текущий момент находится " + poolDeals.size() + " сделок.");
+        }
+    }
 }
