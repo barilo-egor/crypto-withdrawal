@@ -12,7 +12,7 @@ public interface IPoolDealService {
 
     PoolDeal save(PoolDeal poolDeal);
 
-    Long delete(Long id);
+    Long delete(PoolDeal poolDeal);
 
     void deleteAll();
 
