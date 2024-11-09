@@ -10,16 +10,13 @@ import tgb.cryptoexchange.cryptowithdrawal.po.PoolDeal;
 import tgb.cryptoexchange.cryptowithdrawal.repository.PoolDealRepository;
 import tgb.cryptoexchange.cryptowithdrawal.service.balance.IBalanceRetriever;
 import tgb.cryptoexchange.cryptowithdrawal.service.withdrawal.IWithdrawalService;
-import tgb.cryptoexchange.cryptowithdrawal.vo.PoolComplete;
-import tgb.cryptoexchange.cryptowithdrawal.vo.PoolCompleteResult;
+import tgb.cryptoexchange.cryptowithdrawal.vo.PoolOperation;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -59,7 +56,7 @@ public class PoolDealService implements IPoolDealService {
         synchronized (this) {
             log.debug("Сохранение сделки в пул: {}", poolDeal);
             poolDeal = poolDealRepository.save(poolDeal);
-            poolTopicKafkaService.poolUpdated("В пул была добавлена сделка бота " + poolDeal.getBot() + " №" + poolDeal.getPid());
+            poolTopicKafkaService.put("В пул была добавлена сделка бота " + poolDeal.getBot() + " №" + poolDeal.getPid());
             return poolDeal;
         }
     }
@@ -70,7 +67,9 @@ public class PoolDealService implements IPoolDealService {
         PoolDeal poolDeal = poolDealRepository.findById(id).orElseThrow(() -> new RuntimeException("Сделка не найдена."));
         synchronized (this) {
             poolDealRepository.delete(poolDeal);
-            poolTopicKafkaService.poolUpdated("Из пула была удалена сделка бота " + poolDeal.getBot() + " №" + poolDeal.getPid());
+            PoolOperation poolOperation = PoolOperation.builder().operation("delete").poolDeals(List.of(poolDeal)).build();
+            poolTopicKafkaService.put(poolOperation);
+            poolTopicKafkaService.put("Из пула была удалена сделка бота " + poolDeal.getBot() + " №" + poolDeal.getPid());
             log.debug("Сделка bot={} pid={} успешно удалена.", poolDeal.getBot(), poolDeal.getPid());
         }
         return id;
@@ -80,8 +79,11 @@ public class PoolDealService implements IPoolDealService {
     public void deleteAll() {
         synchronized (this) {
             log.debug("Очищение пула.");
+            List<PoolDeal> poolDeals = poolDealRepository.findAll();
+            PoolOperation poolOperation = PoolOperation.builder().poolDeals(poolDeals).operation("clear").build();
             poolDealRepository.deleteAll();
-            poolTopicKafkaService.poolUpdated("Пул был очищен.");
+            poolTopicKafkaService.put(poolOperation);
+            poolTopicKafkaService.put("Пул был очищен.");
             log.debug("Пул успешно очищен.");
         }
     }
@@ -107,19 +109,13 @@ public class PoolDealService implements IPoolDealService {
         String hash;
         synchronized (this) {
             hash = withdrawalService.withdrawal(pairs);
-            Map<String, List<PoolDeal>> sortedDeals = poolDeals.stream()
-                    .collect(Collectors.groupingBy(PoolDeal::getBot, TreeMap::new, Collectors.toList()));
-            PoolComplete poolComplete = PoolComplete.builder()
-                    .hash(hash)
-                    .results(sortedDeals.entrySet().stream()
-                            .map(entry -> PoolCompleteResult.builder()
-                                    .bot(entry.getKey())
-                                    .pids(entry.getValue().stream().map(PoolDeal::getPid).toList())
-                                    .build())
-                            .toList())
+            PoolOperation poolOperation = PoolOperation.builder()
+                    .operation("complete")
+                    .poolDeals(poolDeals)
+                    .data(hash)
                     .build();
-            poolTopicKafkaService.complete(poolComplete);
-            poolTopicKafkaService.poolUpdated("Пул был завершен.");
+            poolTopicKafkaService.put(poolOperation);
+            poolTopicKafkaService.put("Пул был завершен.");
             deleteAll();
             log.debug("Пул успешно завершен, сделки удалены.");
         }
