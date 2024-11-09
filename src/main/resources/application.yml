@@ -7,7 +7,7 @@ spring:
   application:
     name: crypto-withdrawal
   datasource:
-    url: "jdbc:sqlite:cryptowithdrawal.db"
+    url: "jdbc:sqlite:db/cryptowithdrawal.db"
     driver-class-name: "org.sqlite.JDBC"
     username: ""
     password: ""
