@@ -1,8 +1,6 @@
 package tgb.cryptoexchange.cryptowithdrawal.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Example;
-import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +57,7 @@ public class PoolDealService implements IPoolDealService {
     @Override
     public PoolDeal save(PoolDeal poolDeal) {
         synchronized (this) {
+            log.debug("Сохранение сделки в пул: {}", poolDeal);
             poolDeal = poolDealRepository.save(poolDeal);
             poolTopicKafkaService.poolUpdated("В пул была добавлена сделка бота " + poolDeal.getBot() + " №" + poolDeal.getPid());
             return poolDeal;
@@ -66,15 +65,13 @@ public class PoolDealService implements IPoolDealService {
     }
 
     @Override
-    public Long delete(String bot, Long pid) {
-        PoolDeal poolDeal = poolDealRepository.findBy(
-                        Example.of(PoolDeal.builder().bot(bot).pid(pid).build()),
-                        FluentQuery.FetchableFluentQuery::all)
-                .stream().findFirst().orElseThrow(() -> new RuntimeException("Сделка не найдена."));
-        Long id = poolDeal.getId();
+    public Long delete(Long id) {
+        log.debug("Удаление сделки id={}", id);
+        PoolDeal poolDeal = poolDealRepository.findById(id).orElseThrow(() -> new RuntimeException("Сделка не найдена."));
         synchronized (this) {
             poolDealRepository.delete(poolDeal);
-            poolTopicKafkaService.poolUpdated("Из пула была удалена сделка бота " + bot + " №" + pid);
+            poolTopicKafkaService.poolUpdated("Из пула была удалена сделка бота " + poolDeal.getBot() + " №" + poolDeal.getPid());
+            log.debug("Сделка bot={} pid={} успешно удалена.", poolDeal.getBot(), poolDeal.getPid());
         }
         return id;
     }
@@ -82,13 +79,16 @@ public class PoolDealService implements IPoolDealService {
     @Override
     public void deleteAll() {
         synchronized (this) {
+            log.debug("Очищение пула.");
             poolDealRepository.deleteAll();
             poolTopicKafkaService.poolUpdated("Пул был очищен.");
+            log.debug("Пул успешно очищен.");
         }
     }
 
     @Override
     public String complete() {
+        log.debug("Завершение пула.");
         List<PoolDeal> poolDeals = poolDealRepository.findAll();
         BigDecimal sum = poolDeals.stream()
                 .map(PoolDeal::getAmount)
@@ -121,6 +121,7 @@ public class PoolDealService implements IPoolDealService {
             poolTopicKafkaService.complete(poolComplete);
             poolTopicKafkaService.poolUpdated("Пул был завершен.");
             deleteAll();
+            log.debug("Пул успешно завершен, сделки удалены.");
         }
         return hash;
     }
