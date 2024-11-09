@@ -6,25 +6,26 @@ import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import tgb.cryptoexchange.cryptowithdrawal.interfaces.IPoolDealService;
+import tgb.cryptoexchange.cryptowithdrawal.interfaces.kafka.IPoolTopicKafkaService;
 import tgb.cryptoexchange.cryptowithdrawal.po.PoolDeal;
 import tgb.cryptoexchange.cryptowithdrawal.repository.PoolDealRepository;
 import tgb.cryptoexchange.cryptowithdrawal.service.balance.IBalanceRetriever;
 import tgb.cryptoexchange.cryptowithdrawal.service.withdrawal.IWithdrawalService;
+import tgb.cryptoexchange.cryptowithdrawal.vo.PoolCompleteResult;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @Transactional
 public class PoolDealService implements IPoolDealService {
-
-    private final Map<String, SseEmitter> emitters = new HashMap<>();
 
     private final PoolDealRepository poolDealRepository;
 
@@ -32,10 +33,13 @@ public class PoolDealService implements IPoolDealService {
 
     private final Map<CryptoCurrency, IWithdrawalService> withdrawalServiceMap;
 
+    private final IPoolTopicKafkaService poolTopicKafkaService;
+
     public PoolDealService(PoolDealRepository poolDealRepository,
-            List<IBalanceRetriever> balanceServices,
-            List<IWithdrawalService> withdrawalServices) {
+                           List<IBalanceRetriever> balanceServices,
+                           List<IWithdrawalService> withdrawalServices, IPoolTopicKafkaService poolTopicKafkaService) {
         this.poolDealRepository = poolDealRepository;
+        this.poolTopicKafkaService = poolTopicKafkaService;
         balanceRetrieversMap = new HashMap<>();
         for (IBalanceRetriever balanceService : balanceServices) {
             balanceRetrieversMap.put(balanceService.getCryptoCurrency(), balanceService);
@@ -54,7 +58,9 @@ public class PoolDealService implements IPoolDealService {
     @Override
     public PoolDeal save(PoolDeal poolDeal) {
         synchronized (this) {
-            return poolDealRepository.save(poolDeal);
+            poolDeal = poolDealRepository.save(poolDeal);
+            poolTopicKafkaService.poolUpdated("В пул была добавлена сделка бота " + poolDeal.getBot() + " №" + poolDeal.getPid());
+            return poolDeal;
         }
     }
 
@@ -67,6 +73,7 @@ public class PoolDealService implements IPoolDealService {
         Long id = poolDeal.getId();
         synchronized (this) {
             poolDealRepository.delete(poolDeal);
+            poolTopicKafkaService.poolUpdated("Из пула была удалена сделка бота " + bot + " №" + pid);
         }
         return id;
     }
@@ -75,6 +82,7 @@ public class PoolDealService implements IPoolDealService {
     public void deleteAll() {
         synchronized (this) {
             poolDealRepository.deleteAll();
+            poolTopicKafkaService.poolUpdated("Пул был очищен.");
         }
     }
 
@@ -98,6 +106,16 @@ public class PoolDealService implements IPoolDealService {
         String hash;
         synchronized (this) {
             hash = withdrawalService.withdrawal(pairs);
+            Map<String, List<PoolDeal>> sortedDeals = poolDeals.stream()
+                    .collect(Collectors.groupingBy(PoolDeal::getBot, TreeMap::new, Collectors.toList()));
+            poolTopicKafkaService.complete(sortedDeals.entrySet().stream()
+                    .map(entry -> PoolCompleteResult.builder()
+                            .bot(entry.getKey())
+                            .pids(entry.getValue().stream().map(PoolDeal::getPid).toList())
+                            .build())
+                    .toList()
+            );
+            poolTopicKafkaService.poolUpdated("Пул был завершен.");
             deleteAll();
         }
         return hash;
