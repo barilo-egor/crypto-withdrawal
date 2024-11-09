@@ -10,7 +10,7 @@ public interface IPoolDealService {
 
     PoolDeal save(PoolDeal poolDeal);
 
-    Long delete(String bot, Long pid);
+    Long delete(Long id);
 
     void deleteAll();
 

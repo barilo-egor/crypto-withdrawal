@@ -38,7 +38,7 @@ public class BitcoinPoolController {
 
     @DeleteMapping
     public ResponseEntity<ApiResponse<Long>> delete(@RequestBody PoolDeal poolDeal) {
-        Long id = poolDealService.delete(poolDeal.getBot(), poolDeal.getPid());
+        Long id = poolDealService.delete(poolDeal.getId());
         return new ResponseEntity<>(ApiResponse.success(id), HttpStatus.ACCEPTED);
     }
 
