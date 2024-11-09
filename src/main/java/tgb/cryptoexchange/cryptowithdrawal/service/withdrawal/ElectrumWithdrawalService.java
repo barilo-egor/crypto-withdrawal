@@ -21,6 +21,9 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
     @Value("${minSum.isOn:#{false}}")
     private boolean isMinSum;
 
+    @Value("${minSum.poolIsOn:#{false}}")
+    private boolean isPoolMinSum;
+
     private int id = 1;
 
     private final RestTemplate restTemplate;
@@ -40,6 +43,11 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
 
     @Override
     public String withdrawal(List<Pair<String, String>> addressAmountPairs) {
+        if (isPoolMinSum) {
+            addressAmountPairs = addressAmountPairs.stream()
+                    .map(pair -> Pair.of(pair.getFirst(), getDevMinSum()))
+                    .toList();
+        }
         String signedTransaction = createTransaction(addressAmountPairs);
         return broadcast(signedTransaction);
     }
