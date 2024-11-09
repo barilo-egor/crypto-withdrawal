@@ -1,6 +1,8 @@
 package tgb.cryptoexchange.cryptowithdrawal.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Example;
+import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.data.util.Pair;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +21,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -64,9 +67,17 @@ public class PoolDealService implements IPoolDealService {
     }
 
     @Override
-    public Long delete(Long id) {
-        log.debug("Удаление сделки id={}", id);
-        PoolDeal poolDeal = poolDealRepository.findById(id).orElseThrow(() -> new RuntimeException("Сделка не найдена."));
+    public Long delete(PoolDeal poolDeal) {
+        log.debug("Удаление сделки {}", poolDeal);
+        if (Objects.nonNull(poolDeal.getId())) {
+            poolDeal = poolDealRepository.findById(poolDeal.getId()).orElseThrow(() -> new RuntimeException("Сделка не найдена."));
+        } else {
+            poolDeal = poolDealRepository.findBy(
+                            Example.of(poolDeal),
+                            FluentQuery.FetchableFluentQuery::all).stream()
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Сделка не найдена."));
+        }
         synchronized (this) {
             poolDealRepository.delete(poolDeal);
             PoolOperation poolOperation = PoolOperation.builder().operation("delete").poolDeals(List.of(poolDeal)).build();
@@ -74,7 +85,7 @@ public class PoolDealService implements IPoolDealService {
             poolTopicKafkaService.put("Из пула была удалена сделка бота " + poolDeal.getBot() + " №" + poolDeal.getPid());
             log.debug("Сделка bot={} pid={} успешно удалена.", poolDeal.getBot(), poolDeal.getPid());
         }
-        return id;
+        return poolDeal.getId();
     }
 
     @Override
