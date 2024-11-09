@@ -1,11 +1,16 @@
 package tgb.cryptoexchange.cryptowithdrawal.interfaces.kafka;
 
-
-import tgb.cryptoexchange.cryptowithdrawal.vo.PoolComplete;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
+import tgb.cryptoexchange.cryptowithdrawal.vo.PoolOperation;
 
 public interface IPoolTopicKafkaService {
 
-    void complete(PoolComplete poolComplete);
+    <T> void put(PoolOperation poolOperation);
 
-    void poolUpdated(String message);
+    void put(String message);
+
+    @Scheduled(cron = "0 0/10 * * * ?")
+    @Async
+    void notifyDealsCount();
 }
