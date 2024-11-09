@@ -1,5 +1,6 @@
 package tgb.cryptoexchange.cryptowithdrawal.po;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,6 +49,7 @@ public class PoolDeal {
     @Column(nullable = false)
     private String amount;
 
+    @JsonIgnore
     public boolean isValid() {
         return Objects.nonNull(bot) && Objects.nonNull(pid) && Objects.nonNull(address) && Objects.nonNull(amount);
     }
