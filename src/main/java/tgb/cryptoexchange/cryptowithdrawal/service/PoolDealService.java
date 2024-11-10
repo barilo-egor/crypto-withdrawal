@@ -74,7 +74,7 @@ public class PoolDealService implements IPoolDealService {
                             FluentQuery.FetchableFluentQuery::all).stream()
                     .findFirst();
             if (optionalPoolDeal.isEmpty()) {
-                return null;
+                return -1L;
             }
         }
         synchronized (this) {
