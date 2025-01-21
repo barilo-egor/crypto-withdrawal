@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import tgb.cryptoexchange.enums.DeliveryType;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -48,9 +49,15 @@ public class PoolDeal {
     @Column(nullable = false)
     private String amount;
 
+    /**
+     * Дата и время добавления сделки в пул
+     */
     @Column(nullable = false)
-    private LocalDate addDate;
+    private LocalDateTime addDate;
 
+    /**
+     * Тип доставки
+     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DeliveryType deliveryType;
