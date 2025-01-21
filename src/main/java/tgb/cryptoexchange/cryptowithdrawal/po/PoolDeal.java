@@ -2,15 +2,14 @@ package tgb.cryptoexchange.cryptowithdrawal.po;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tgb.cryptoexchange.enums.DeliveryType;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -49,8 +48,16 @@ public class PoolDeal {
     @Column(nullable = false)
     private String amount;
 
+    @Column(nullable = false)
+    private LocalDate addDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private DeliveryType deliveryType;
+
     @JsonIgnore
     public boolean isValid() {
-        return Objects.nonNull(bot) && Objects.nonNull(pid) && Objects.nonNull(address) && Objects.nonNull(amount);
+        return Objects.nonNull(bot) && Objects.nonNull(pid) && Objects.nonNull(address) && Objects.nonNull(amount)
+                && Objects.nonNull(addDate) && Objects.nonNull(deliveryType);
     }
 }
