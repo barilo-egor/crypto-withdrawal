@@ -2,6 +2,7 @@ package tgb.cryptoexchange.cryptowithdrawal.po;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tgb.cryptoexchange.enums.DeliveryType;
+import tgb.cryptoexchange.serialize.LocalDateTimeDeserializer;
 import tgb.cryptoexchange.serialize.LocalDateTimeSerializer;
 
 import java.time.LocalDate;
@@ -56,6 +58,7 @@ public class PoolDeal {
      */
     @Column(nullable = false)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime addDate;
 
     /**
