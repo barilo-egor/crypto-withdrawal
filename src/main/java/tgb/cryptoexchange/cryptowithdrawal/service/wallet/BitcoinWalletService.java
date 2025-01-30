@@ -37,6 +37,11 @@ public class BitcoinWalletService extends ElectrumWalletService {
     }
 
     @Override
+    public String getDirectory() {
+        return ".electrum";
+    }
+
+    @Override
     public CryptoCurrency getCryptoCurrency() {
         return CryptoCurrency.BITCOIN;
     }
