@@ -12,6 +12,9 @@ import tgb.cryptoexchange.cryptowithdrawal.vo.ElectrumResponse;
 import tgb.cryptoexchange.cryptowithdrawal.vo.LoadWalletElectrumRequest;
 import tgb.cryptoexchange.cryptowithdrawal.vo.RestoreWalletElectrumRequest;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,6 +41,7 @@ public abstract class ElectrumWalletService implements IWalletService {
     @Override
     public void loadWallet(String seedPhrase) {
         closeWallet();
+        deleteDefaultWalletFile();
         restoreWallet(seedPhrase);
         loadNewWallet();
     }
@@ -57,6 +61,25 @@ public abstract class ElectrumWalletService implements IWalletService {
             validResponse(response, "закрытие кошелька");
         } catch (Exception e) {
             throw new RuntimeException("Ошибка при закрытии кошелька.",e);
+        }
+    }
+
+    private void deleteDefaultWalletFile() {
+        try {
+            // Получаем путь к файлу default_wallet
+            Path defaultWalletPath = Paths.get(System.getProperty("user.home"), ".electrum", "default_wallet");
+
+            // Проверяем, существует ли файл
+            if (Files.exists(defaultWalletPath)) {
+                // Удаляем файл
+                Files.delete(defaultWalletPath);
+                log.info("Файл default_wallet успешно удален.");
+            } else {
+                log.warn("Файл default_wallet не найден.");
+            }
+        } catch (Exception e) {
+            log.error("Ошибка при удалении файла default_wallet.", e);
+            throw new RuntimeException("Ошибка при удалении файла default_wallet.", e);
         }
     }
 
