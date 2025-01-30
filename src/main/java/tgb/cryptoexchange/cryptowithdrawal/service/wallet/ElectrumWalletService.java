@@ -103,7 +103,7 @@ public abstract class ElectrumWalletService implements IWalletService {
             HttpEntity<RestoreWalletElectrumRequest> entity = new HttpEntity<>(
                     RestoreWalletElectrumRequest.builder()
                             .id(String.valueOf(id++))
-                            .params(List.of("", seedPhrase))
+                            .params(List.of(seedPhrase))
                             .build(),
                     headers
             );
