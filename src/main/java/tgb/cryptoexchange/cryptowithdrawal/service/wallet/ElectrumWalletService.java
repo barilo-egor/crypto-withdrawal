@@ -40,7 +40,11 @@ public abstract class ElectrumWalletService implements IWalletService {
 
     @Override
     public void loadWallet(String seedPhrase) {
-        closeWallet();
+        try {
+            closeWallet();
+        } catch (RuntimeException e) {
+            log.warn("Кошелек уже закрыт или отсутствует: {}", e.getMessage());
+        }
         deleteDefaultWalletFile();
         restoreWallet(seedPhrase);
         loadNewWallet();
