@@ -32,6 +32,7 @@ public class WalletController extends ApiController {
     @PostMapping("/wallet/{cryptoCurrency}")
     public ResponseEntity<?> replace(@PathVariable CryptoCurrency cryptoCurrency, @RequestBody String seedPhrase) {
         log.debug("Received request to replace wallet with seedPhrase: {}", seedPhrase);
+        log.debug("CryptoCurrency: {}", Objects.nonNull(cryptoCurrency) ? cryptoCurrency.name() : "null");
         IWalletService walletService = walletServiceMap.get(cryptoCurrency);
         log.debug("Found walletService: {}", Objects.nonNull(walletService));
         if (seedPhrase == null || seedPhrase.isBlank() || walletService == null) {
