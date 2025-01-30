@@ -5,14 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tgb.cryptoexchange.cryptowithdrawal.interfaces.IWalletService;
 import tgb.cryptoexchange.cryptowithdrawal.vo.CloseWalletElectrumRequest;
 import tgb.cryptoexchange.cryptowithdrawal.vo.ElectrumResponse;
 import tgb.cryptoexchange.cryptowithdrawal.vo.LoadWalletElectrumRequest;
 import tgb.cryptoexchange.cryptowithdrawal.vo.RestoreWalletElectrumRequest;
-import tgb.cryptoexchange.enums.CryptoCurrency;
 
 import java.util.List;
 import java.util.Objects;
@@ -109,12 +107,6 @@ public abstract class ElectrumWalletService implements IWalletService {
             throw new RuntimeException(message);
         }
     }
-
-    @Override
-    public CryptoCurrency getCryptoCurrency() {
-        return CryptoCurrency.BITCOIN;
-    }
-
 
     public abstract String getUrl();
 
