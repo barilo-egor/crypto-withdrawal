@@ -71,7 +71,7 @@ public abstract class ElectrumWalletService implements IWalletService {
     private void deleteDefaultWalletFile() {
         try {
             // Получаем путь к файлу default_wallet
-            Path defaultWalletPath = Paths.get(System.getProperty("user.home"), ".electrum", "default_wallet");
+            Path defaultWalletPath = Paths.get(System.getProperty("user.home"), ".electrum", "wallets", "default_wallet");
 
             // Проверяем, существует ли файл
             if (Files.exists(defaultWalletPath)) {
