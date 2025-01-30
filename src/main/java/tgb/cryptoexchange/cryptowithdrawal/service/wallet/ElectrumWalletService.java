@@ -42,12 +42,23 @@ public abstract class ElectrumWalletService implements IWalletService {
     public void loadWallet(String seedPhrase) {
         try {
             closeWallet();
+            sleep();
         } catch (RuntimeException e) {
             log.warn("Кошелек уже закрыт или отсутствует: {}", e.getMessage());
         }
         deleteDefaultWalletFile();
+        sleep();
         restoreWallet(seedPhrase);
         loadNewWallet();
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Задержка прервана.", e);
+        }
     }
 
     private void closeWallet() {
