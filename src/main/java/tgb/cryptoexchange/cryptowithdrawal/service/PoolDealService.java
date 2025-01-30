@@ -58,7 +58,7 @@ public class PoolDealService implements IPoolDealService {
         synchronized (this) {
             log.debug("Сохранение сделки в пул: {}", poolDeal);
             poolDeal = poolDealRepository.save(poolDeal);
-            poolTopicKafkaService.put("В пул была добавлена сделка бота " + poolDeal.getBot() + " №" + poolDeal.getPid());
+//            poolTopicKafkaService.put("В пул была добавлена сделка бота " + poolDeal.getBot() + " №" + poolDeal.getPid());
             return poolDeal;
         }
     }
