@@ -37,6 +37,11 @@ public class LitecoinWalletService extends ElectrumWalletService {
     }
 
     @Override
+    public String getDirectory() {
+        return ".electrum-ltc";
+    }
+
+    @Override
     public CryptoCurrency getCryptoCurrency() {
         return CryptoCurrency.LITECOIN;
     }

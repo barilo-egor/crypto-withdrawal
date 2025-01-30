@@ -82,7 +82,7 @@ public abstract class ElectrumWalletService implements IWalletService {
     private void deleteDefaultWalletFile() {
         try {
             // Получаем путь к файлу default_wallet
-            Path defaultWalletPath = Paths.get(System.getProperty("user.home"), ".electrum", "wallets", "default_wallet");
+            Path defaultWalletPath = Paths.get(System.getProperty("user.home"), getDirectory(), "wallets", "default_wallet");
 
             // Проверяем, существует ли файл
             if (Files.exists(defaultWalletPath)) {
@@ -151,4 +151,6 @@ public abstract class ElectrumWalletService implements IWalletService {
     public abstract String getRpcUser();
 
     public abstract String getRpcPassword();
+
+    public abstract String getDirectory();
 }
