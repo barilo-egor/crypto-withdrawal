@@ -1,0 +1,16 @@
+package tgb.cryptoexchange.cryptowithdrawal.vo;
+
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
+
+import java.util.List;
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+@SuperBuilder
+public class CloseWalletElectrumRequest extends ElectrumRequest{
+
+    private final String method = "close_wallet";
+}
