@@ -120,7 +120,7 @@ public abstract class ElectrumWalletService implements IWalletService {
         HttpEntity<LoadWalletElectrumRequest> entity = new HttpEntity<>(
                 LoadWalletElectrumRequest.builder()
                         .id(String.valueOf(id++))
-                        .params(List.of(""))
+                        .params(List.of())
                         .build(),
                 headers
         );
