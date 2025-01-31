@@ -1,7 +1,19 @@
 package tgb.cryptoexchange.cryptowithdrawal.vo;
 
+import lombok.Builder;
+import lombok.Data;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 
-import java.math.BigDecimal;
+@Data
+@Builder
+public class WithdrawalRequest {
 
-public record WithdrawalRequest(CryptoCurrency cryptoCurrency, String amount, String address) {}
+    private CryptoCurrency cryptoCurrency;
+
+    private String amount;
+
+    private String address;
+
+    private String fee;
+}
+
