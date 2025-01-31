@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import tgb.cryptoexchange.cryptowithdrawal.vo.*;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -42,22 +43,22 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
     }
 
     @Override
-    public String withdrawal(List<Pair<String, String>> addressAmountPairs) {
+    public String withdrawal(List<Pair<String, String>> addressAmountPairs, String feePerKb) {
         if (isPoolMinSum) {
             addressAmountPairs = addressAmountPairs.stream()
                     .map(pair -> Pair.of(pair.getFirst(), getDevMinSum()))
                     .toList();
         }
-        String signedTransaction = createTransaction(addressAmountPairs);
+        String signedTransaction = createTransaction(addressAmountPairs, feePerKb);
         return broadcast(signedTransaction);
     }
 
     @Override
-    public String withdrawal(String address, String amount) {
+    public String withdrawal(String address, String amount, String feePerKb) {
         if (isMinSum) {
             amount = getDevMinSum();
         }
-        String signedTransaction = createTransaction(List.of(Pair.of(address, amount)));
+        String signedTransaction = createTransaction(List.of(Pair.of(address, amount)), feePerKb);
         return broadcast(signedTransaction);
     }
 
@@ -83,15 +84,31 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
         return response.getResult();
     }
 
-    private String createTransaction(List<Pair<String, String>> params) {
+    private String createTransaction(List<Pair<String, String>> params, String feePerKb) {
         log.debug("Запрос на создание транзакции для пар адрес-сумма: \n{}", params);
         if (Objects.isNull(params) || params.isEmpty()) {
             throw new RuntimeException("Список сделок для создания транзакции пуст.");
         }
         boolean isSingleAddress = params.size() == 1;
-        List<Object> paramsList = isSingleAddress
-                ? List.of(params.getFirst().getFirst(), isMinSum ? getDevMinSum() : params.getFirst().getSecond())
-                : List.of(params.stream().map(pair -> List.of(pair.getFirst(), isPoolMinSum ? getDevMinSum() : pair.getSecond())).collect(Collectors.toList()));
+        List<Object> paramsList = new ArrayList<>();
+        if (isSingleAddress) {
+            paramsList.add(List.of(
+                    params.getFirst().getFirst(),
+                    isMinSum
+                            ? getDevMinSum()
+                            : params.getFirst().getSecond()));
+        } else {
+            paramsList.add(params.stream().map(
+                    pair -> List.of(
+                            pair.getFirst(),
+                            isPoolMinSum
+                                    ? getDevMinSum()
+                                    : pair.getSecond()
+                    )).collect(Collectors.toList()));
+        }
+        if (Objects.nonNull(feePerKb) && !feePerKb.isBlank()) {
+            paramsList.add(feePerKb);
+        }
         HttpEntity<? extends ElectrumRequest> entity;
         if (isSingleAddress) {
             entity = new HttpEntity<>(
@@ -140,4 +157,5 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
     public abstract String getDevMinSum();
 
     public abstract CryptoCurrency getCryptoCurrency();
+
 }

@@ -31,14 +31,14 @@ public class WalletController extends ApiController {
 
     @PostMapping("/wallet/{cryptoCurrency}")
     public ResponseEntity<?> replace(@PathVariable CryptoCurrency cryptoCurrency, @RequestBody String seedPhrase) {
-        log.debug("Received request to replace wallet with seedPhrase: {}", seedPhrase);
-        log.debug("CryptoCurrency: {}", Objects.nonNull(cryptoCurrency) ? cryptoCurrency.name() : "null");
+        log.debug("Запрос на замену кошелька для криптовалюты {}", Objects.nonNull(cryptoCurrency) ? cryptoCurrency.name() : "null");
         IWalletService walletService = walletServiceMap.get(cryptoCurrency);
-        log.debug("Found walletService: {}", Objects.nonNull(walletService));
         if (seedPhrase == null || seedPhrase.isBlank() || walletService == null) {
+            log.error("Сид фраза пуста, либо не найден обработчик замены кошелька для данной криптовалюты.");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         walletService.loadWallet(seedPhrase);
+        log.debug("Кошелек успешно заменен.");
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

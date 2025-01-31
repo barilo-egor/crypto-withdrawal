@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface IWithdrawalService {
 
-    String withdrawal(List<Pair<String, String>> addressAmountPairs);
+    String withdrawal(List<Pair<String, String>> addressAmountPairs, String feePerKb);
 
-    String withdrawal(String address, String amount);
+    String withdrawal(String address, String amount, String feePerKb);
 
     CryptoCurrency getCryptoCurrency();
 

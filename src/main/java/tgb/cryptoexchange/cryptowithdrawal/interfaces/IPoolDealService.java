@@ -16,7 +16,7 @@ public interface IPoolDealService {
 
     void clear();
 
-    String complete();
+    String complete(String fee);
 
     @Scheduled(cron = "0 0/10 * * * ?")
     @Async

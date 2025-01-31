@@ -49,8 +49,8 @@ public class BitcoinPoolController {
     }
 
     @PostMapping("/complete")
-    public ResponseEntity<ApiResponse<String>> complete() {
-        String hash = poolDealService.complete();
+    public ResponseEntity<ApiResponse<String>> complete(@RequestParam(required = false) String fee) {
+        String hash = poolDealService.complete(fee);
         return new ResponseEntity<>(ApiResponse.success(hash), HttpStatus.OK);
     }
 }

@@ -101,7 +101,7 @@ public class PoolDealService implements IPoolDealService {
     }
 
     @Override
-    public String complete() {
+    public String complete(String fee) {
         log.debug("Завершение пула.");
         List<PoolDeal> poolDeals = poolDealRepository.findAll();
         BigDecimal sum = poolDeals.stream()
@@ -120,7 +120,7 @@ public class PoolDealService implements IPoolDealService {
         IWithdrawalService withdrawalService = withdrawalServiceMap.get(CryptoCurrency.BITCOIN);
         String hash;
         synchronized (this) {
-            hash = withdrawalService.withdrawal(pairs);
+            hash = withdrawalService.withdrawal(pairs, fee);
             PoolOperation poolOperation = PoolOperation.builder()
                     .operation("complete")
                     .poolDeals(poolDeals)
