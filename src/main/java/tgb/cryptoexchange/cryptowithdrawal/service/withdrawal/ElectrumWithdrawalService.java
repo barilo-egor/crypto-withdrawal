@@ -12,6 +12,7 @@ import tgb.cryptoexchange.cryptowithdrawal.vo.*;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -92,21 +93,21 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
         boolean isSingleAddress = params.size() == 1;
         List<Object> paramsList = new ArrayList<>();
         if (isSingleAddress) {
-            paramsList.add(List.of("destination", params.getFirst().getFirst()));
-            paramsList.add(List.of("amount", isMinSum
+            paramsList.add(params.getFirst().getFirst());
+            paramsList.add(isMinSum
                     ? getDevMinSum()
-                    : params.getFirst().getSecond()));
+                    : params.getFirst().getSecond());
         } else {
-            paramsList.add(List.of("outputs", params.stream().map(
+            paramsList.add(params.stream().map(
                     pair -> List.of(
                             pair.getFirst(),
                             isPoolMinSum
                                     ? getDevMinSum()
                                     : pair.getSecond()
-                    )).collect(Collectors.toList())));
+                    )).collect(Collectors.toList()));
         }
         if (Objects.nonNull(feePerKb) && !feePerKb.isBlank()) {
-            paramsList.add(List.of("feerate", feePerKb));
+            paramsList.add(Collections.singletonMap("feerate", feePerKb));
         }
         HttpEntity<? extends ElectrumRequest> entity;
         if (isSingleAddress) {
