@@ -86,7 +86,7 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
     }
 
     private String createTransaction(List<Pair<String, String>> params, String feePerKb) {
-        log.debug("Запрос на создание транзакции для пар адрес-сумма: \n{}", params);
+        log.debug("Запрос на создание транзакции для пар адрес-сумма: \n{}\nКомиссия feePerKb={}", params, feePerKb);
         if (Objects.isNull(params) || params.isEmpty()) {
             throw new RuntimeException("Список сделок для создания транзакции пуст.");
         }
