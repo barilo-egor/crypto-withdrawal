@@ -107,7 +107,7 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
                     )).collect(Collectors.toList()));
         }
         if (Objects.nonNull(feePerKb) && !feePerKb.isBlank()) {
-            paramsList.add(Collections.singletonMap("feerate", Double.parseDouble(feePerKb)));
+            paramsList.add(Collections.singletonMap("feerate", feePerKb.trim() + " sat/byte"));
         }
         HttpEntity<? extends ElectrumRequest> entity;
         if (isSingleAddress) {
