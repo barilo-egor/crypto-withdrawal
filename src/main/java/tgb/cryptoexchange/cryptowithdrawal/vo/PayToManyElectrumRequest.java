@@ -9,5 +9,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class PayToManyElectrumRequest extends ElectrumRequest {
 
+    private ElectrumPayToManyBody params;
+
     private final String method = "paytomany";
 }
