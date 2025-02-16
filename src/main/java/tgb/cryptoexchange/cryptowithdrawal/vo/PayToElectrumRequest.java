@@ -1,6 +1,5 @@
 package tgb.cryptoexchange.cryptowithdrawal.vo;
 
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
@@ -9,6 +8,8 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 public class PayToElectrumRequest extends ElectrumRequest {
+
+    private ElectrumPayToBody params;
 
     private final String method = "payto";
 }

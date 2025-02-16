@@ -11,8 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import tgb.cryptoexchange.cryptowithdrawal.vo.*;
 import tgb.cryptoexchange.enums.CryptoCurrency;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -91,30 +89,20 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
             throw new RuntimeException("Список сделок для создания транзакции пуст.");
         }
         boolean isSingleAddress = params.size() == 1;
-        List<Object> paramsList = new ArrayList<>();
-        if (isSingleAddress) {
-            paramsList.add(Collections.singletonMap("destination", params.getFirst().getFirst()));
-            paramsList.add(Collections.singletonMap("amount", isMinSum
-                    ? getDevMinSum()
-                    : params.getFirst().getSecond()));
-        } else {
-            paramsList.add(Collections.singletonMap("outputs", params.stream().map(
-                    pair -> List.of(
-                            pair.getFirst(),
-                            isPoolMinSum
-                                    ? getDevMinSum()
-                                    : pair.getSecond()
-                    )).collect(Collectors.toList())));
-        }
-        if (Objects.nonNull(feePerKb) && !feePerKb.isBlank()) {
-            paramsList.add(Collections.singletonMap("feerate", Integer.parseInt(feePerKb)));
-        }
         HttpEntity<? extends ElectrumRequest> entity;
         if (isSingleAddress) {
             entity = new HttpEntity<>(
                     PayToElectrumRequest.builder()
                             .id(String.valueOf(id++))
-                            .params(paramsList)
+                            .params(ElectrumPayToBody.builder()
+                                    .destination(params.getFirst().getFirst())
+                                    .amount(isMinSum
+                                            ? getDevMinSum()
+                                            : params.getFirst().getSecond())
+                                    .feerate(Objects.nonNull(feePerKb) && !feePerKb.isBlank()
+                                            ? Integer.parseInt(feePerKb)
+                                            : null)
+                                    .build())
                             .build(),
                     headers
             );
@@ -122,7 +110,18 @@ public abstract class ElectrumWithdrawalService implements IWithdrawalService {
             entity = new HttpEntity<>(
                     PayToManyElectrumRequest.builder()
                             .id(String.valueOf(id++))
-                            .params(paramsList)
+                            .params(ElectrumPayToManyBody.builder()
+                                    .outputs(params.stream().map(
+                                            pair -> List.of(
+                                                    pair.getFirst(),
+                                                    isPoolMinSum
+                                                            ? getDevMinSum()
+                                                            : pair.getSecond()
+                                            )).collect(Collectors.toList()))
+                                    .feerate(Objects.nonNull(feePerKb) && !feePerKb.isBlank()
+                                            ? Integer.parseInt(feePerKb)
+                                            : null)
+                                    .build())
                             .build(),
                     headers
             );
